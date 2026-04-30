@@ -28,9 +28,9 @@ class AuthService {
   }) async {
     String res = "Some error occurred";
     try {
-      if (email.isNotEmpty ||
-          password.isNotEmpty ||
-          username.isNotEmpty ||
+      if (email.isNotEmpty &&
+          password.isNotEmpty &&
+          username.isNotEmpty &&
           bio.isNotEmpty) {
         // Register user
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
@@ -59,13 +59,11 @@ class AuthService {
             .set(user.toJson());
 
         res = "success";
+      } else {
+        res = "Please enter all the fields";
       }
     } on FirebaseAuthException catch (err) {
-      if (err.code == 'invalid-email') {
-        res = 'The email is badly formatted.';
-      } else if (err.code == 'weak-password') {
-        res = 'The password is too weak.';
-      }
+      res = err.message ?? err.toString();
     } catch (err) {
       res = err.toString();
     }
@@ -79,13 +77,15 @@ class AuthService {
   }) async {
     String res = "Some error occurred";
     try {
-      if (email.isNotEmpty || password.isNotEmpty) {
+      if (email.isNotEmpty && password.isNotEmpty) {
         await _auth.signInWithEmailAndPassword(
             email: email, password: password);
         res = "success";
       } else {
         res = "Please enter all the fields";
       }
+    } on FirebaseAuthException catch (err) {
+      res = err.message ?? err.toString();
     } catch (err) {
       res = err.toString();
     }
