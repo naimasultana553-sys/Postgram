@@ -1,27 +1,33 @@
+import 'dart:convert';
 import 'dart:typed_data';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
 
 class StorageService {
-  final FirebaseStorage _storage = FirebaseStorage.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  // Adding image to firebase storage
+  // Adding image to Imgur to bypass Firebase Storage limitations
   Future<String> uploadImageToStorage(
       String childName, Uint8List file, bool isPost) async {
-    Reference ref =
-        _storage.ref().child(childName).child(_auth.currentUser!.uid);
+    
+    try {
+      String base64Image = base64Encode(file);
+      var response = await http.post(
+        Uri.parse('https://api.imgur.com/3/image'),
+        headers: {
+          'Authorization': 'Client-ID 546c25a59c58ad7',
+        },
+        body: {
+          'image': base64Image,
+        },
+      );
 
-    if (isPost) {
-      String id = const Uuid().v1();
-      ref = ref.child(id);
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        return responseData['data']['link'];
+      } else {
+        throw Exception("Failed to upload image to Imgur: ${response.body}");
+      }
+    } catch (e) {
+      print(e.toString());
+      throw Exception("Image upload failed");
     }
-
-    UploadTask uploadTask = ref.putData(file);
-
-    TaskSnapshot snap = await uploadTask;
-    String downloadUrl = await snap.ref.getDownloadURL();
-    return downloadUrl;
   }
 }
