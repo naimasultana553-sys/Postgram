@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:postgram/utils/theme.dart';
+import 'package:postgram/views/chat/chat_list_screen.dart';
 import 'package:postgram/widgets/post_card.dart';
 
 class FeedScreen extends StatefulWidget {
@@ -25,7 +26,13 @@ class _FeedScreenState extends State<FeedScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const ChatListScreen(),
+                ),
+              );
+            },
             icon: const Icon(Icons.messenger_outline),
           ),
         ],

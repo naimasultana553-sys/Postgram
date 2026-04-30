@@ -119,4 +119,45 @@ class FirestoreService {
       print(e.toString());
     }
   }
+
+  // Send Chat Message
+  Future<void> sendMessage(String receiverId, String text, String senderId) async {
+    try {
+      if (text.isNotEmpty) {
+        String chatId = _getChatId(senderId, receiverId);
+        
+        await _firestore
+            .collection('chats')
+            .doc(chatId)
+            .collection('messages')
+            .add({
+          'senderId': senderId,
+          'receiverId': receiverId,
+          'text': text,
+          'timestamp': DateTime.now(),
+        });
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  // Get Chat Messages
+  Stream<QuerySnapshot> getMessages(String currentUserId, String otherUserId) {
+    String chatId = _getChatId(currentUserId, otherUserId);
+    
+    return _firestore
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .orderBy('timestamp', descending: false)
+        .snapshots();
+  }
+
+  // Helper method to generate unique chat ID
+  String _getChatId(String user1, String user2) {
+    List<String> users = [user1, user2];
+    users.sort();
+    return users.join('_');
+  }
 }
