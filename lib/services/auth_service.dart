@@ -18,20 +18,18 @@ class AuthService {
     return model.UserModel.fromSnap(snap);
   }
 
-  // Sign Up
   Future<String> signUpUser({
     required String email,
     required String password,
     required String username,
-    required String bio,
+    String bio = "",
     required Uint8List? file,
   }) async {
     String res = "Some error occurred";
     try {
       if (email.isNotEmpty &&
           password.isNotEmpty &&
-          username.isNotEmpty &&
-          bio.isNotEmpty) {
+          username.isNotEmpty) {
         // Register user
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
