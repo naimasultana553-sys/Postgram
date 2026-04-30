@@ -19,7 +19,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  var userData = {};
+  Map<String, dynamic> userData = {};
   int postLen = 0;
   int followers = 0;
   int following = 0;
