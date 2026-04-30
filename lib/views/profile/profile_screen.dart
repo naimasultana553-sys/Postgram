@@ -7,6 +7,7 @@ import 'package:postgram/utils/theme.dart';
 import 'package:postgram/utils/utils.dart';
 import 'package:postgram/views/auth/login_screen.dart';
 import 'package:postgram/views/leaderboard/leaderboard_screen.dart';
+import 'package:postgram/views/profile/edit_profile_screen.dart';
 import 'package:postgram/widgets/follow_button.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -120,21 +121,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     FirebaseAuth.instance.currentUser!.uid ==
                                             widget.uid
                                         ? FollowButton(
-                                            text: 'Sign Out',
+                                            text: 'Edit Profile',
                                             backgroundColor:
                                                 mobileBackgroundColor,
                                             textColor: primaryColor,
                                             borderColor: Colors.grey,
                                             function: () async {
-                                              await AuthService().signOut();
-                                              if (context.mounted) {
-                                                Navigator.of(context)
-                                                    .pushReplacement(
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const LoginScreen(),
+                                              bool? updated = await Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) => EditProfileScreen(
+                                                    userData: userData,
                                                   ),
-                                                );
+                                                ),
+                                              );
+                                              if (updated == true) {
+                                                getData(); // refresh profile data
                                               }
                                             },
                                           )
